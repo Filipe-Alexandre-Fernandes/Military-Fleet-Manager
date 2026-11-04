@@ -4,7 +4,7 @@ C# Windows Forms source code for managing military vehicles, updating their stat
 
 [Português](README.pt-PT.md)
 
-> **Project status:** the .NET 10 Windows Forms project, solution, Designer files and resources have been restored from the Stage 4 submission. Analytical SQL queries, the stored procedure and application screenshots are included. Database/schema creation scripts and seed data are still missing, so a fresh installation requires the original database. Compilation and end-to-end execution have not yet been verified in this environment.
+> **Project status:** the .NET 10 Windows Forms project, solution, Designer files and resources have been restored from the Stage 4 submission. Analytical SQL queries, the stored procedure and application screenshots are included. The database creation script is included; sample data is still missing, so a fresh database starts empty. Compilation and end-to-end execution have not yet been verified in this environment.
 
 ## Features represented in the source
 
@@ -21,15 +21,19 @@ These describe the available code, not a verified end-to-end release. The stored
 Screenshots supplied by the author, including the fleet query with loaded records.
 
 ### Main menu
+
 ![Main menu](docs/screenshots/Menu-principal.png)
 
 ### Fleet overview
+
 ![Vehicle list](docs/screenshots/Listar-Viaturas.png)
 
 ### Vehicle updates
+
 ![Update vehicle](docs/screenshots/Atualizar-viaturas.png)
 
 ### Requisitions and assignments
+
 ![Vehicle requisitions](docs/screenshots/Requisicao-viaturas.png)
 
 ## Technology
@@ -60,15 +64,15 @@ The restored project targets **.NET 10 for Windows** (`net10.0-windows`) and ref
 On Windows, install the **.NET 10 SDK**. For visual editing, use Visual Studio with .NET 10 support and the **.NET desktop development** workload.
 
 ```powershell
-git clone https://github.com/Filipe-Alexandre-Fernandes/Military-Fleet-Manager---AAD-Project.git
-cd Military-Fleet-Manager---AAD-Project
+git clone https://github.com/Filipe-Alexandre-Fernandes/Military-Fleet-Manager.git
+cd Military-Fleet-Manager
 dotnet restore GestaoViaturasWinForms.csproj
 dotnet build GestaoViaturasWinForms.csproj --configuration Release
 ```
 
 You can also open [GestaoViaturasWinForms.slnx](GestaoViaturasWinForms.slnx) in a compatible Visual Studio version.
 
-Before running, restore the original SQL Server schema and suitable sample data, then install the [stored procedure](sql/Stored-Procedure-Requisicao-Atribuicao.sql) as described below. The supplied [analytical queries](sql/Militares-Querys.sql) require an existing database; they do not create the schema or stored procedure. Neither supplied ZIP includes a database backup. Configure the connection in both [Db.cs](Db.cs) and [FrmRequisicoesLote.cs](FrmRequisicoesLote.cs), then run:
+Before running, follow the database setup below: create the schema, install the stored procedure and load suitable sample data. The [analytical queries](sql/Militares-Querys.sql) query existing records; they do not populate the database. Configure the connection in both [Db.cs](Db.cs) and [FrmRequisicoesLote.cs](FrmRequisicoesLote.cs), then run:
 
 ```powershell
 dotnet run --project GestaoViaturasWinForms.csproj
@@ -78,13 +82,25 @@ These commands are the intended workflow; a successful build and database run ha
 
 The current source uses a local SQL Server instance, the `GestaoViaturasAtual` database and Windows integrated authentication. Its `TrustServerCertificate=True` setting should be reviewed for any environment beyond local development.
 
+## Database setup
+
+Use SQL Server Management Studio with an account allowed to create databases and objects. Run the scripts in this order:
+
+1. Run [sql/AAD.sql](sql/AAD.sql) to create `GestaoViaturasAtual`, **29 tables** and **37 foreign keys**. The supplied DDL is preserved. Run it only for a fresh installation: it has no existence checks and is not a migration for an existing database.
+2. Open [sql/Stored-Procedure-Requisicao-Atribuicao.sql](sql/Stored-Procedure-Requisicao-Atribuicao.sql). For this first installation, replace the initial `ALTER PROCEDURE` declaration with `CREATE PROCEDURE`, then execute the script. Keep `ALTER PROCEDURE` when updating an existing procedure.
+3. Load suitable sample data before testing the interface. No seed script is included. Populate referenced records before dependent records: for example, `Marca` before `Modelo`, `CP` before `Quartel`, and `Modelo`, `TipoViatura` and `Quartel` before `Viatura`. Requisitions also require `Operacao`, `Militar` and `UnidadeMilitar` records.
+
+After schema creation alone, lists and selection controls will be empty. The screenshots show a populated database; their records are not included in the schema script.
+
+Static checks confirmed that all foreign key tables and columns exist and that the procedure's insert columns exist in the schema. SQL Server execution has not been verified in this environment.
+
 ## SQL queries
 
 [sql/Militares-Querys.sql](sql/Militares-Querys.sql) contains the supplied queries for the ten assignment questions, including alternative solutions. Query logic is preserved; the original Windows encoding has been converted to UTF-8.
 
 Open the file in SQL Server Management Studio, select the existing `GestaoViaturasAtual` database, and execute the desired query selection. The script contains no `USE` statement. Queries using `GETDATE()` depend on the SQL Server's current date.
 
-These are analytical queries, **not an installation script**. They also reference tables beyond those used by the desktop interface. Schema definitions and initial data must still be supplied; the stored procedure is now included separately. Results have not been validated against a running SQL Server database.
+These are analytical queries, **not an installation script**. They also reference tables beyond those used by the desktop interface. The schema and stored procedure are included separately; initial data still needs to be supplied. Results have not been validated against a running SQL Server database.
 
 ## Stored procedure
 
@@ -109,11 +125,14 @@ The caller reads a scalar result and converts it to the created requisition ID. 
 ## Next steps
 
 - [x] Restore the project, solution and Designer resources.
-- [x] Include the stored procedure.\n- [ ] Restore the SQL schema and sample data.
+- [x] Include the stored procedure.
+- [x] Include the database and table creation script.
+- [ ] Add sample data.
 - [ ] Centralize the connection string in configuration.
 - [ ] Add date-order validation and clearer handling of connection failures.
 - [ ] Add automated tests for validation and transactional behavior.
-- [x] Include application screenshots supplied by the author.\n- [ ] Add a short demonstration video.
+- [x] Include application screenshots supplied by the author.
+- [ ] Add a short demonstration video.
 - [ ] Document a verified installation process and supported versions.
 
 ## Background
