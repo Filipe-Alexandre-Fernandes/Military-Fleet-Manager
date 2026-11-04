@@ -4,7 +4,7 @@ Código C# de uma aplicação Windows Forms para consultar viaturas militares, a
 
 [English](README.md)
 
-> **Estado do projeto:** o projeto Windows Forms em .NET 10, a solução, os Designer e os recursos foram recuperados da entrega da Etapa 4. As consultas SQL analíticas, o procedimento armazenado e as imagens da aplicação estão incluídos. Continuam a faltar os scripts de criação da base de dados/tabelas e os dados iniciais, pelo que uma instalação de raiz depende da base de dados original. A compilação e a execução completa ainda não foram verificadas neste ambiente.
+> **Estado do projeto:** o projeto Windows Forms em .NET 10, a solução, os Designer e os recursos foram recuperados da entrega da Etapa 4. As consultas SQL analíticas, o procedimento armazenado e as imagens da aplicação estão incluídos. O script de criação da base de dados está incluído; continuam a faltar os dados iniciais, pelo que uma base de dados criada de raiz fica vazia. A compilação e a execução completa ainda não foram verificadas neste ambiente.
 
 ## Funcionalidades presentes no código
 
@@ -21,15 +21,19 @@ Esta lista descreve o código disponível, não uma versão testada de ponta a p
 Capturas fornecidas pelo autor, incluindo a consulta com viaturas carregadas.
 
 ### Menu principal
+
 ![Menu principal](docs/screenshots/Menu-principal.png)
 
 ### Consulta de viaturas
+
 ![Lista de viaturas](docs/screenshots/Listar-Viaturas.png)
 
 ### Atualização de viaturas
+
 ![Atualizar viatura](docs/screenshots/Atualizar-viaturas.png)
 
 ### Requisição e atribuição
+
 ![Requisição de viaturas](docs/screenshots/Requisicao-viaturas.png)
 
 ## Tecnologias
@@ -60,15 +64,15 @@ O projeto recuperado utiliza **.NET 10 para Windows** (`net10.0-windows`) e **Mi
 Em Windows, instalar o **SDK .NET 10**. Para editar os formulários, utilizar Visual Studio com suporte a .NET 10 e a carga de trabalho **Desenvolvimento para ambiente de trabalho com .NET**.
 
 ```powershell
-git clone https://github.com/Filipe-Alexandre-Fernandes/Military-Fleet-Manager---AAD-Project.git
-cd Military-Fleet-Manager---AAD-Project
+git clone https://github.com/Filipe-Alexandre-Fernandes/Military-Fleet-Manager.git
+cd Military-Fleet-Manager
 dotnet restore GestaoViaturasWinForms.csproj
 dotnet build GestaoViaturasWinForms.csproj --configuration Release
 ```
 
 Também é possível abrir [GestaoViaturasWinForms.slnx](GestaoViaturasWinForms.slnx) numa versão compatível do Visual Studio.
 
-Antes de executar, recuperar o esquema SQL Server original e dados de demonstração adequados e instalar o [procedimento armazenado](sql/Stored-Procedure-Requisicao-Atribuicao.sql) conforme descrito abaixo. As [consultas analíticas fornecidas](sql/Militares-Querys.sql) dependem de uma base de dados existente; não criam o esquema nem o procedimento armazenado. Nenhum dos dois ZIP fornecidos inclui um backup da base de dados. Configurar a ligação em [Db.cs](Db.cs) e [FrmRequisicoesLote.cs](FrmRequisicoesLote.cs) e executar:
+Antes de executar, seguir a preparação da base de dados abaixo: criar o esquema, instalar o procedimento armazenado e carregar dados de demonstração adequados. As [consultas analíticas](sql/Militares-Querys.sql) consultam registos existentes; não preenchem a base de dados. Configurar a ligação em [Db.cs](Db.cs) e [FrmRequisicoesLote.cs](FrmRequisicoesLote.cs) e executar:
 
 ```powershell
 dotnet run --project GestaoViaturasWinForms.csproj
@@ -78,13 +82,25 @@ Estes comandos descrevem o processo previsto; a compilação e a execução com 
 
 O código atual utiliza uma instância local de SQL Server, a base de dados `GestaoViaturasAtual` e autenticação integrada do Windows. A opção `TrustServerCertificate=True` deve ser revista para ambientes além do desenvolvimento local.
 
+## Preparar a base de dados
+
+Utilizar o SQL Server Management Studio com uma conta que possa criar bases de dados e objetos. Executar pela seguinte ordem:
+
+1. Executar [sql/AAD.sql](sql/AAD.sql) para criar `GestaoViaturasAtual`, **29 tabelas** e **37 chaves estrangeiras**. O DDL fornecido foi preservado. Executar apenas numa instalação de raiz: não contém verificações de existência e não é uma migração para uma base de dados existente.
+2. Abrir [sql/Stored-Procedure-Requisicao-Atribuicao.sql](sql/Stored-Procedure-Requisicao-Atribuicao.sql). Nesta primeira instalação, substituir a declaração inicial `ALTER PROCEDURE` por `CREATE PROCEDURE` e executar o script. Manter `ALTER PROCEDURE` para atualizar um procedimento já existente.
+3. Carregar dados de demonstração antes de testar a interface. Ainda não está incluído um script de dados iniciais. Inserir primeiro os registos referenciados: por exemplo, `Marca` antes de `Modelo`, `CP` antes de `Quartel` e `Modelo`, `TipoViatura` e `Quartel` antes de `Viatura`. As requisições também precisam de registos de `Operacao`, `Militar` e `UnidadeMilitar`.
+
+A criação do esquema deixa as listas e os seletores vazios. As imagens mostram uma base de dados preenchida; esses registos não estão incluídos no script do esquema.
+
+As verificações estáticas confirmaram que existem as tabelas e colunas referenciadas pelas chaves estrangeiras e as colunas de inserção do procedimento. A execução em SQL Server não foi verificada neste ambiente.
+
 ## Consultas SQL
 
 [sql/Militares-Querys.sql](sql/Militares-Querys.sql) contém as consultas fornecidas para as dez questões do trabalho, incluindo soluções alternativas. A lógica das consultas foi preservada; a codificação original do Windows foi convertida para UTF-8.
 
 Abrir o ficheiro no SQL Server Management Studio, selecionar a base de dados existente `GestaoViaturasAtual` e executar a seleção da consulta pretendida. O script não contém uma instrução `USE`. As consultas com `GETDATE()` dependem da data atual do SQL Server.
 
-São consultas analíticas, **não um script de instalação**. Também referenciam tabelas além das utilizadas pela interface desktop. Continuam a ser necessários o esquema e os dados iniciais; o procedimento armazenado está agora incluído separadamente. Os resultados não foram validados numa base de dados SQL Server em execução.
+São consultas analíticas, **não um script de instalação**. Também referenciam tabelas além das utilizadas pela interface desktop. O esquema e o procedimento armazenado estão incluídos separadamente; continuam a ser necessários os dados iniciais. Os resultados não foram validados numa base de dados SQL Server em execução.
 
 ## Procedimento armazenado
 
@@ -109,11 +125,14 @@ O código lê um resultado escalar e converte-o no identificador da requisição
 ## Próximos passos
 
 - [x] Recuperar o projeto, a solução e os recursos do Designer.
-- [x] Incluir o procedimento armazenado.\n- [ ] Recuperar o esquema SQL e dados de demonstração.
+- [x] Incluir o procedimento armazenado.
+- [x] Incluir o script de criação da base de dados e das tabelas.
+- [ ] Adicionar dados de demonstração.
 - [ ] Centralizar a configuração da ligação à base de dados.
 - [ ] Validar a ordem das datas e melhorar o tratamento de falhas de ligação.
 - [ ] Adicionar testes de validação e do comportamento transacional.
-- [x] Incluir as imagens da aplicação fornecidas pelo autor.\n- [ ] Adicionar um vídeo curto de demonstração.
+- [x] Incluir as imagens da aplicação fornecidas pelo autor.
+- [ ] Adicionar um vídeo curto de demonstração.
 - [ ] Documentar uma instalação verificada e as versões suportadas.
 
 ## Contexto
