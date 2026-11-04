@@ -4,7 +4,7 @@ Código C# de uma aplicação Windows Forms para consultar viaturas militares, a
 
 [English](README.md)
 
-> **Estado do projeto:** o projeto Windows Forms em .NET 10, a solução, os Designer e os recursos foram recuperados da entrega da Etapa 4. As consultas SQL analíticas estão incluídas, mas continuam a faltar os scripts de criação da base de dados e o procedimento armazenado: a execução depende da base de dados original. A compilação e a execução completa ainda não foram verificadas neste ambiente.
+> **Estado do projeto:** o projeto Windows Forms em .NET 10, a solução, os Designer e os recursos foram recuperados da entrega da Etapa 4. As consultas SQL analíticas, o procedimento armazenado e as imagens da aplicação estão incluídos. Continuam a faltar os scripts de criação da base de dados/tabelas e os dados iniciais, pelo que uma instalação de raiz depende da base de dados original. A compilação e a execução completa ainda não foram verificadas neste ambiente.
 
 ## Funcionalidades presentes no código
 
@@ -14,7 +14,23 @@ Código C# de uma aplicação Windows Forms para consultar viaturas militares, a
 - **Escrita transacional:** chamada de `sp_CriarRequisicaoEAtribuicao` para cada viatura numa única transação, com commit do lote em caso de sucesso ou tentativa de rollback em caso de erro.
 - **Verificação da ligação:** apresentação do estado da ligação à base de dados ao abrir o menu.
 
-Esta lista descreve o código disponível, não uma versão testada de ponta a ponta. A implementação do procedimento armazenado não está incluída.
+Esta lista descreve o código disponível, não uma versão testada de ponta a ponta. O procedimento armazenado está incluído e os seus sete parâmetros e resultado escalar correspondem à chamada da aplicação.
+
+## Imagens da aplicação
+
+Capturas fornecidas pelo autor, incluindo a consulta com viaturas carregadas.
+
+### Menu principal
+![Menu principal](docs/screenshots/Menu-principal.png)
+
+### Consulta de viaturas
+![Lista de viaturas](docs/screenshots/Listar-Viaturas.png)
+
+### Atualização de viaturas
+![Atualizar viatura](docs/screenshots/Atualizar-viaturas.png)
+
+### Requisição e atribuição
+![Requisição de viaturas](docs/screenshots/Requisicao-viaturas.png)
 
 ## Tecnologias
 
@@ -52,7 +68,7 @@ dotnet build GestaoViaturasWinForms.csproj --configuration Release
 
 Também é possível abrir [GestaoViaturasWinForms.slnx](GestaoViaturasWinForms.slnx) numa versão compatível do Visual Studio.
 
-Antes de executar, recuperar o esquema SQL Server original, o procedimento armazenado e dados de demonstração adequados. As [consultas analíticas fornecidas](sql/Militares-Querys.sql) dependem de uma base de dados existente; não criam o esquema nem o procedimento armazenado. Nenhum dos dois ZIP fornecidos inclui um backup da base de dados. Configurar a ligação em [Db.cs](Db.cs) e [FrmRequisicoesLote.cs](FrmRequisicoesLote.cs) e executar:
+Antes de executar, recuperar o esquema SQL Server original e dados de demonstração adequados e instalar o [procedimento armazenado](sql/Stored-Procedure-Requisicao-Atribuicao.sql) conforme descrito abaixo. As [consultas analíticas fornecidas](sql/Militares-Querys.sql) dependem de uma base de dados existente; não criam o esquema nem o procedimento armazenado. Nenhum dos dois ZIP fornecidos inclui um backup da base de dados. Configurar a ligação em [Db.cs](Db.cs) e [FrmRequisicoesLote.cs](FrmRequisicoesLote.cs) e executar:
 
 ```powershell
 dotnet run --project GestaoViaturasWinForms.csproj
@@ -68,7 +84,15 @@ O código atual utiliza uma instância local de SQL Server, a base de dados `Ges
 
 Abrir o ficheiro no SQL Server Management Studio, selecionar a base de dados existente `GestaoViaturasAtual` e executar a seleção da consulta pretendida. O script não contém uma instrução `USE`. As consultas com `GETDATE()` dependem da data atual do SQL Server.
 
-São consultas analíticas, **não um script de instalação**. Também referenciam tabelas além das utilizadas pela interface desktop. Continuam a ser necessários o esquema, os dados iniciais e `sp_CriarRequisicaoEAtribuicao`. Os resultados não foram validados numa base de dados SQL Server em execução.
+São consultas analíticas, **não um script de instalação**. Também referenciam tabelas além das utilizadas pela interface desktop. Continuam a ser necessários o esquema e os dados iniciais; o procedimento armazenado está agora incluído separadamente. Os resultados não foram validados numa base de dados SQL Server em execução.
+
+## Procedimento armazenado
+
+[Stored-Procedure-Requisicao-Atribuicao.sql](sql/Stored-Procedure-Requisicao-Atribuicao.sql) insere uma requisição em `RequisicaoViatura`, insere a respetiva atribuição em `AtribuicaoViatura` e devolve o identificador da requisição através de `SELECT`. Os parâmetros correspondem à chamada do Windows Forms.
+
+O script fornecido foi preservado, com a codificação normalizada para UTF-8. Seleciona `GestaoViaturasAtual` e utiliza **ALTER PROCEDURE**, pelo que a base de dados, as tabelas e o procedimento já têm de existir. Na primeira instalação, depois de criar o esquema, substituir `ALTER PROCEDURE` por `CREATE PROCEDURE` antes de executar o script no SQL Server Management Studio. Este script não cria tabelas nem dados de demonstração.
+
+O procedimento inicia uma transação e faz rollback em caso de erro. A aplicação também envolve o lote numa transação; os caminhos de erro e a interação entre os rollbacks ainda precisam de testes de integração. O script foi comparado com o código que o chama, mas não foi executado neste ambiente.
 
 ## Dependências da base de dados
 
@@ -85,11 +109,11 @@ O código lê um resultado escalar e converte-o no identificador da requisição
 ## Próximos passos
 
 - [x] Recuperar o projeto, a solução e os recursos do Designer.
-- [ ] Recuperar o esquema SQL, o procedimento armazenado e dados de demonstração.
+- [x] Incluir o procedimento armazenado.\n- [ ] Recuperar o esquema SQL e dados de demonstração.
 - [ ] Centralizar a configuração da ligação à base de dados.
 - [ ] Validar a ordem das datas e melhorar o tratamento de falhas de ligação.
 - [ ] Adicionar testes de validação e do comportamento transacional.
-- [ ] Incluir imagens com dados fictícios e uma demonstração curta.
+- [x] Incluir as imagens da aplicação fornecidas pelo autor.\n- [ ] Adicionar um vídeo curto de demonstração.
 - [ ] Documentar uma instalação verificada e as versões suportadas.
 
 ## Contexto

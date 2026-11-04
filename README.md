@@ -4,7 +4,7 @@ C# Windows Forms source code for managing military vehicles, updating their stat
 
 [Português](README.pt-PT.md)
 
-> **Project status:** the .NET 10 Windows Forms project, solution, Designer files and resources have been restored from the Stage 4 submission. Analytical SQL queries are included, but database creation scripts and the stored procedure are still missing: running the application requires the original database. Compilation and end-to-end execution have not yet been verified in this environment.
+> **Project status:** the .NET 10 Windows Forms project, solution, Designer files and resources have been restored from the Stage 4 submission. Analytical SQL queries, the stored procedure and application screenshots are included. Database/schema creation scripts and seed data are still missing, so a fresh installation requires the original database. Compilation and end-to-end execution have not yet been verified in this environment.
 
 ## Features represented in the source
 
@@ -14,7 +14,23 @@ C# Windows Forms source code for managing military vehicles, updating their stat
 - **Transactional writes:** call `sp_CriarRequisicaoEAtribuicao` for each selected vehicle in one SQL transaction, committing the batch on success or attempting rollback on failure.
 - **Connection check:** display database connectivity information when the main menu opens.
 
-These describe the available code, not a verified end-to-end release. The stored procedure implementation is not present.
+These describe the available code, not a verified end-to-end release. The stored procedure is included and its seven parameters and scalar return match the application call.
+
+## Application screenshots
+
+Screenshots supplied by the author, including the fleet query with loaded records.
+
+### Main menu
+![Main menu](docs/screenshots/Menu-principal.png)
+
+### Fleet overview
+![Vehicle list](docs/screenshots/Listar-Viaturas.png)
+
+### Vehicle updates
+![Update vehicle](docs/screenshots/Atualizar-viaturas.png)
+
+### Requisitions and assignments
+![Vehicle requisitions](docs/screenshots/Requisicao-viaturas.png)
 
 ## Technology
 
@@ -52,7 +68,7 @@ dotnet build GestaoViaturasWinForms.csproj --configuration Release
 
 You can also open [GestaoViaturasWinForms.slnx](GestaoViaturasWinForms.slnx) in a compatible Visual Studio version.
 
-Before running, restore the original SQL Server schema, stored procedure and suitable sample data. The supplied [analytical queries](sql/Militares-Querys.sql) require an existing database; they do not create the schema or stored procedure. Neither supplied ZIP includes a database backup. Configure the connection in both [Db.cs](Db.cs) and [FrmRequisicoesLote.cs](FrmRequisicoesLote.cs), then run:
+Before running, restore the original SQL Server schema and suitable sample data, then install the [stored procedure](sql/Stored-Procedure-Requisicao-Atribuicao.sql) as described below. The supplied [analytical queries](sql/Militares-Querys.sql) require an existing database; they do not create the schema or stored procedure. Neither supplied ZIP includes a database backup. Configure the connection in both [Db.cs](Db.cs) and [FrmRequisicoesLote.cs](FrmRequisicoesLote.cs), then run:
 
 ```powershell
 dotnet run --project GestaoViaturasWinForms.csproj
@@ -68,7 +84,15 @@ The current source uses a local SQL Server instance, the `GestaoViaturasAtual` d
 
 Open the file in SQL Server Management Studio, select the existing `GestaoViaturasAtual` database, and execute the desired query selection. The script contains no `USE` statement. Queries using `GETDATE()` depend on the SQL Server's current date.
 
-These are analytical queries, **not an installation script**. They also reference tables beyond those used by the desktop interface. Schema definitions, initial data and `sp_CriarRequisicaoEAtribuicao` must still be supplied. Results have not been validated against a running SQL Server database.
+These are analytical queries, **not an installation script**. They also reference tables beyond those used by the desktop interface. Schema definitions and initial data must still be supplied; the stored procedure is now included separately. Results have not been validated against a running SQL Server database.
+
+## Stored procedure
+
+[Stored-Procedure-Requisicao-Atribuicao.sql](sql/Stored-Procedure-Requisicao-Atribuicao.sql) inserts a requisition into `RequisicaoViatura`, inserts its assignment into `AtribuicaoViatura`, and returns the new requisition ID through `SELECT`. Its parameters match the WinForms call.
+
+The supplied script is preserved, with encoding normalized to UTF-8. It selects `GestaoViaturasAtual` and uses **ALTER PROCEDURE**, so that database, its tables and the procedure must already exist. To install it for the first time after creating the schema, change `ALTER PROCEDURE` to `CREATE PROCEDURE` before executing the script in SQL Server Management Studio. This script does not create tables or sample data.
+
+The procedure starts a transaction and rolls back on error. The application also wraps the batch in a transaction; database error paths and rollback interaction still require integration testing. The script has been reviewed against the calling code, but has not been executed in this environment.
 
 ## Database dependencies
 
@@ -85,11 +109,11 @@ The caller reads a scalar result and converts it to the created requisition ID. 
 ## Next steps
 
 - [x] Restore the project, solution and Designer resources.
-- [ ] Restore the SQL schema, stored procedure and sample data.
+- [x] Include the stored procedure.\n- [ ] Restore the SQL schema and sample data.
 - [ ] Centralize the connection string in configuration.
 - [ ] Add date-order validation and clearer handling of connection failures.
 - [ ] Add automated tests for validation and transactional behavior.
-- [ ] Add screenshots using synthetic data and a short demonstration.
+- [x] Include application screenshots supplied by the author.\n- [ ] Add a short demonstration video.
 - [ ] Document a verified installation process and supported versions.
 
 ## Background
