@@ -4,7 +4,7 @@ Código C# de uma aplicação Windows Forms para consultar viaturas militares, a
 
 [English](README.md)
 
-> **Estado do projeto:** o projeto Windows Forms em .NET 10, a solução, os Designer e os recursos foram recuperados da entrega da Etapa 4. Continuam a faltar os scripts SQL: a execução depende da base de dados original. A compilação e a execução completa ainda não foram verificadas neste ambiente.
+> **Estado do projeto:** o projeto Windows Forms em .NET 10, a solução, os Designer e os recursos foram recuperados da entrega da Etapa 4. As consultas SQL analíticas estão incluídas, mas continuam a faltar os scripts de criação da base de dados e o procedimento armazenado: a execução depende da base de dados original. A compilação e a execução completa ainda não foram verificadas neste ambiente.
 
 ## Funcionalidades presentes no código
 
@@ -52,7 +52,7 @@ dotnet build GestaoViaturasWinForms.csproj --configuration Release
 
 Também é possível abrir [GestaoViaturasWinForms.slnx](GestaoViaturasWinForms.slnx) numa versão compatível do Visual Studio.
 
-Antes de executar, recuperar o esquema SQL Server original, o procedimento armazenado e dados de demonstração adequados. **Nenhum dos dois ZIP fornecidos inclui scripts SQL ou um backup da base de dados.** Configurar a ligação em [Db.cs](Db.cs) e [FrmRequisicoesLote.cs](FrmRequisicoesLote.cs) e executar:
+Antes de executar, recuperar o esquema SQL Server original, o procedimento armazenado e dados de demonstração adequados. As [consultas analíticas fornecidas](sql/Militares-Querys.sql) dependem de uma base de dados existente; não criam o esquema nem o procedimento armazenado. Nenhum dos dois ZIP fornecidos inclui um backup da base de dados. Configurar a ligação em [Db.cs](Db.cs) e [FrmRequisicoesLote.cs](FrmRequisicoesLote.cs) e executar:
 
 ```powershell
 dotnet run --project GestaoViaturasWinForms.csproj
@@ -61,6 +61,14 @@ dotnet run --project GestaoViaturasWinForms.csproj
 Estes comandos descrevem o processo previsto; a compilação e a execução com a base de dados ainda não foram verificadas neste ambiente.
 
 O código atual utiliza uma instância local de SQL Server, a base de dados `GestaoViaturasAtual` e autenticação integrada do Windows. A opção `TrustServerCertificate=True` deve ser revista para ambientes além do desenvolvimento local.
+
+## Consultas SQL
+
+[sql/Militares-Querys.sql](sql/Militares-Querys.sql) contém as consultas fornecidas para as dez questões do trabalho, incluindo soluções alternativas. A lógica das consultas foi preservada; a codificação original do Windows foi convertida para UTF-8.
+
+Abrir o ficheiro no SQL Server Management Studio, selecionar a base de dados existente `GestaoViaturasAtual` e executar a seleção da consulta pretendida. O script não contém uma instrução `USE`. As consultas com `GETDATE()` dependem da data atual do SQL Server.
+
+São consultas analíticas, **não um script de instalação**. Também referenciam tabelas além das utilizadas pela interface desktop. Continuam a ser necessários o esquema, os dados iniciais e `sp_CriarRequisicaoEAtribuicao`. Os resultados não foram validados numa base de dados SQL Server em execução.
 
 ## Dependências da base de dados
 
