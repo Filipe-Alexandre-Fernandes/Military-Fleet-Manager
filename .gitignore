@@ -1,0 +1,30 @@
+# Visual Studio local state
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build and package output
+[Bb]in/
+[Oo]bj/
+[Aa]rtifacts/
+[Tt]est[Rr]esults/
+packages/
+
+# Local secrets and overrides
+.env
+.env.*
+!.env.example
+appsettings.Local.json
+appsettings.*.Local.json
+
+# Local SQL Server databases and backups (keep SQL scripts tracked)
+*.mdf
+*.ldf
+*.ndf
+*.bak
+
+# OS files
+.DS_Store
+Thumbs.db
