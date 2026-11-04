@@ -4,7 +4,7 @@ C# Windows Forms source code for managing military vehicles, updating their stat
 
 [Português](README.pt-PT.md)
 
-> **Project status:** incomplete source snapshot. The repository contains application logic, but the Visual Studio project, form Designer files and database scripts are not included. It cannot currently be built or run from a fresh clone.
+> **Project status:** the .NET 10 Windows Forms project, solution, Designer files and resources have been restored from the Stage 4 submission. SQL scripts are still missing: running the application requires the original database. Compilation and end-to-end execution have not yet been verified in this environment.
 
 ## Features represented in the source
 
@@ -26,7 +26,7 @@ These describe the available code, not a verified end-to-end release. The stored
 | Data access | ADO.NET with `Microsoft.Data.SqlClient` |
 | Data binding | `DataTable` and `DataGridView` |
 
-The target .NET version and NuGet package versions cannot be confirmed without the original project file.
+The restored project targets **.NET 10 for Windows** (`net10.0-windows`) and references **Microsoft.Data.SqlClient 6.1.3**.
 
 ## Source guide
 
@@ -39,22 +39,26 @@ The target .NET version and NuGet package versions cannot be confirmed without t
 | [FrmRequisicoesLote.cs](FrmRequisicoesLote.cs) | Batch selection, validation and transaction |
 | [Db.cs](Db.cs) | Query and command helpers |
 
-## What is needed to run it
+## Build and run
 
-Restore the original project assets before attempting to build:
+On Windows, install the **.NET 10 SDK**. For visual editing, use Visual Studio with .NET 10 support and the **.NET desktop development** workload.
 
-1. The `.csproj` and, if available, the Visual Studio solution.
-2. The `.Designer.cs` files defining `InitializeComponent()`, controls and event wiring for each form, plus any associated `.resx` resources.
-3. SQL scripts defining the schema and `sp_CriarRequisicaoEAtribuicao`.
-4. Synthetic sample data and any configuration required by the original project.
+```powershell
+git clone https://github.com/Filipe-Alexandre-Fernandes/Military-Fleet-Manager---AAD-Project.git
+cd Military-Fleet-Manager---AAD-Project
+dotnet restore GestaoViaturasWinForms.csproj
+dotnet build GestaoViaturasWinForms.csproj --configuration Release
+```
 
-Once those assets are restored:
+You can also open [GestaoViaturasWinForms.slnx](GestaoViaturasWinForms.slnx) in a compatible Visual Studio version.
 
-1. Use Windows and a Visual Studio installation with the **.NET desktop development** workload and the SDK targeted by the restored project.
-2. Restore the project's NuGet dependencies, including `Microsoft.Data.SqlClient`.
-3. Create the SQL Server database from the restored scripts.
-4. Configure the database connection in both [Db.cs](Db.cs) and [FrmRequisicoesLote.cs](FrmRequisicoesLote.cs).
-5. Build and run the restored Windows Forms project.
+Before running, restore the original SQL Server schema, stored procedure and suitable sample data. **Neither supplied ZIP includes SQL scripts or a database backup.** Configure the connection in both [Db.cs](Db.cs) and [FrmRequisicoesLote.cs](FrmRequisicoesLote.cs), then run:
+
+```powershell
+dotnet run --project GestaoViaturasWinForms.csproj
+```
+
+These commands are the intended workflow; a successful build and database run have not been verified here.
 
 The current source uses a local SQL Server instance, the `GestaoViaturasAtual` database and Windows integrated authentication. Its `TrustServerCertificate=True` setting should be reviewed for any environment beyond local development.
 
@@ -72,7 +76,8 @@ The caller reads a scalar result and converts it to the created requisition ID. 
 
 ## Next steps
 
-- [ ] Restore the project, Designer resources and database scripts.
+- [x] Restore the project, solution and Designer resources.
+- [ ] Restore the SQL schema, stored procedure and sample data.
 - [ ] Centralize the connection string in configuration.
 - [ ] Add date-order validation and clearer handling of connection failures.
 - [ ] Add automated tests for validation and transactional behavior.
@@ -81,8 +86,13 @@ The caller reads a scalar result and converts it to the created requisition ID. 
 
 ## Background
 
-Maintained by [Filipe Fernandes](https://github.com/Filipe-Alexandre-Fernandes). The repository's original identifier is **AAD**; the application namespace remains `GestaoViaturasWinForms`.
+Academic project for **Armazenamento e Acesso a Dados** (January 2026), by **Ana Rita Ranito, Filipe Fernandes and Nuno Araújo**.
+
+[Stage 4 report](docs/relatorio-etapa-4.pdf) includes the project description, data model and interface screenshots.
+
+Repository maintained by [Filipe Fernandes](https://github.com/Filipe-Alexandre-Fernandes). The repository's original identifier is **AAD**; the application namespace remains `GestaoViaturasWinForms`.
 
 ## License
 
 No license file is currently included.
+

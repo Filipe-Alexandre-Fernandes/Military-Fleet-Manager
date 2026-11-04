@@ -4,7 +4,7 @@ Código C# de uma aplicação Windows Forms para consultar viaturas militares, a
 
 [English](README.md)
 
-> **Estado do projeto:** versão parcial do código-fonte. Faltam o projeto Visual Studio, os ficheiros do Designer dos formulários e os scripts da base de dados. Ainda não é possível compilar ou executar a aplicação apenas com um clone deste repositório.
+> **Estado do projeto:** o projeto Windows Forms em .NET 10, a solução, os Designer e os recursos foram recuperados da entrega da Etapa 4. Continuam a faltar os scripts SQL: a execução depende da base de dados original. A compilação e a execução completa ainda não foram verificadas neste ambiente.
 
 ## Funcionalidades presentes no código
 
@@ -26,7 +26,7 @@ Esta lista descreve o código disponível, não uma versão testada de ponta a p
 | Acesso a dados | ADO.NET com `Microsoft.Data.SqlClient` |
 | Apresentação de dados | `DataTable` e `DataGridView` |
 
-Sem o ficheiro de projeto original, não é possível confirmar a versão de .NET nem as versões dos pacotes NuGet.
+O projeto recuperado utiliza **.NET 10 para Windows** (`net10.0-windows`) e **Microsoft.Data.SqlClient 6.1.3**.
 
 ## Organização
 
@@ -39,22 +39,26 @@ Sem o ficheiro de projeto original, não é possível confirmar a versão de .NE
 | [FrmRequisicoesLote.cs](FrmRequisicoesLote.cs) | Seleção, validação e transação das requisições |
 | [Db.cs](Db.cs) | Métodos auxiliares de consulta e execução SQL |
 
-## O que falta para executar
+## Compilar e executar
 
-Recuperar primeiro os seguintes elementos do projeto original:
+Em Windows, instalar o **SDK .NET 10**. Para editar os formulários, utilizar Visual Studio com suporte a .NET 10 e a carga de trabalho **Desenvolvimento para ambiente de trabalho com .NET**.
 
-1. O ficheiro `.csproj` e, se existir, a solução Visual Studio.
-2. Os ficheiros `.Designer.cs` com `InitializeComponent()`, os controlos e a associação dos eventos de cada formulário, além dos recursos `.resx` associados.
-3. Os scripts SQL do esquema e do procedimento `sp_CriarRequisicaoEAtribuicao`.
-4. Dados de demonstração fictícios e a configuração necessária.
+```powershell
+git clone https://github.com/Filipe-Alexandre-Fernandes/Military-Fleet-Manager---AAD-Project.git
+cd Military-Fleet-Manager---AAD-Project
+dotnet restore GestaoViaturasWinForms.csproj
+dotnet build GestaoViaturasWinForms.csproj --configuration Release
+```
 
-Depois de recuperar esses elementos:
+Também é possível abrir [GestaoViaturasWinForms.slnx](GestaoViaturasWinForms.slnx) numa versão compatível do Visual Studio.
 
-1. Utilizar Windows e Visual Studio com a carga de trabalho **Desenvolvimento para ambiente de trabalho com .NET** e o SDK indicado no projeto recuperado.
-2. Restaurar as dependências NuGet, incluindo `Microsoft.Data.SqlClient`.
-3. Criar a base de dados SQL Server com os scripts recuperados.
-4. Configurar a ligação em [Db.cs](Db.cs) e [FrmRequisicoesLote.cs](FrmRequisicoesLote.cs).
-5. Compilar e executar o projeto Windows Forms recuperado.
+Antes de executar, recuperar o esquema SQL Server original, o procedimento armazenado e dados de demonstração adequados. **Nenhum dos dois ZIP fornecidos inclui scripts SQL ou um backup da base de dados.** Configurar a ligação em [Db.cs](Db.cs) e [FrmRequisicoesLote.cs](FrmRequisicoesLote.cs) e executar:
+
+```powershell
+dotnet run --project GestaoViaturasWinForms.csproj
+```
+
+Estes comandos descrevem o processo previsto; a compilação e a execução com a base de dados ainda não foram verificadas neste ambiente.
 
 O código atual utiliza uma instância local de SQL Server, a base de dados `GestaoViaturasAtual` e autenticação integrada do Windows. A opção `TrustServerCertificate=True` deve ser revista para ambientes além do desenvolvimento local.
 
@@ -72,7 +76,8 @@ O código lê um resultado escalar e converte-o no identificador da requisição
 
 ## Próximos passos
 
-- [ ] Recuperar o projeto, os recursos do Designer e os scripts SQL.
+- [x] Recuperar o projeto, a solução e os recursos do Designer.
+- [ ] Recuperar o esquema SQL, o procedimento armazenado e dados de demonstração.
 - [ ] Centralizar a configuração da ligação à base de dados.
 - [ ] Validar a ordem das datas e melhorar o tratamento de falhas de ligação.
 - [ ] Adicionar testes de validação e do comportamento transacional.
@@ -81,8 +86,13 @@ O código lê um resultado escalar e converte-o no identificador da requisição
 
 ## Contexto
 
-Mantido por [Filipe Fernandes](https://github.com/Filipe-Alexandre-Fernandes). O identificador original do repositório é **AAD**; o namespace da aplicação mantém-se `GestaoViaturasWinForms`.
+Trabalho académico de **Armazenamento e Acesso a Dados** (janeiro de 2026), realizado por **Ana Rita Ranito, Filipe Fernandes e Nuno Araújo**.
+
+O [relatório da Etapa 4](docs/relatorio-etapa-4.pdf) inclui a descrição do projeto, o modelo de dados e imagens da interface.
+
+Repositório mantido por [Filipe Fernandes](https://github.com/Filipe-Alexandre-Fernandes). O identificador original do repositório é **AAD**; o namespace da aplicação mantém-se `GestaoViaturasWinForms`.
 
 ## Licença
 
 O repositório ainda não inclui um ficheiro de licença.
+
