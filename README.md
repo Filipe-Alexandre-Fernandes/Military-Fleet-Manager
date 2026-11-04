@@ -4,7 +4,7 @@ C# Windows Forms source code for managing military vehicles, updating their stat
 
 [Português](README.pt-PT.md)
 
-> **Project status:** the .NET 10 Windows Forms project, solution, Designer files and resources have been restored from the Stage 4 submission. SQL scripts are still missing: running the application requires the original database. Compilation and end-to-end execution have not yet been verified in this environment.
+> **Project status:** the .NET 10 Windows Forms project, solution, Designer files and resources have been restored from the Stage 4 submission. Analytical SQL queries are included, but database creation scripts and the stored procedure are still missing: running the application requires the original database. Compilation and end-to-end execution have not yet been verified in this environment.
 
 ## Features represented in the source
 
@@ -52,7 +52,7 @@ dotnet build GestaoViaturasWinForms.csproj --configuration Release
 
 You can also open [GestaoViaturasWinForms.slnx](GestaoViaturasWinForms.slnx) in a compatible Visual Studio version.
 
-Before running, restore the original SQL Server schema, stored procedure and suitable sample data. **Neither supplied ZIP includes SQL scripts or a database backup.** Configure the connection in both [Db.cs](Db.cs) and [FrmRequisicoesLote.cs](FrmRequisicoesLote.cs), then run:
+Before running, restore the original SQL Server schema, stored procedure and suitable sample data. The supplied [analytical queries](sql/Militares-Querys.sql) require an existing database; they do not create the schema or stored procedure. Neither supplied ZIP includes a database backup. Configure the connection in both [Db.cs](Db.cs) and [FrmRequisicoesLote.cs](FrmRequisicoesLote.cs), then run:
 
 ```powershell
 dotnet run --project GestaoViaturasWinForms.csproj
@@ -61,6 +61,14 @@ dotnet run --project GestaoViaturasWinForms.csproj
 These commands are the intended workflow; a successful build and database run have not been verified here.
 
 The current source uses a local SQL Server instance, the `GestaoViaturasAtual` database and Windows integrated authentication. Its `TrustServerCertificate=True` setting should be reviewed for any environment beyond local development.
+
+## SQL queries
+
+[sql/Militares-Querys.sql](sql/Militares-Querys.sql) contains the supplied queries for the ten assignment questions, including alternative solutions. Query logic is preserved; the original Windows encoding has been converted to UTF-8.
+
+Open the file in SQL Server Management Studio, select the existing `GestaoViaturasAtual` database, and execute the desired query selection. The script contains no `USE` statement. Queries using `GETDATE()` depend on the SQL Server's current date.
+
+These are analytical queries, **not an installation script**. They also reference tables beyond those used by the desktop interface. Schema definitions, initial data and `sp_CriarRequisicaoEAtribuicao` must still be supplied. Results have not been validated against a running SQL Server database.
 
 ## Database dependencies
 
