@@ -82,6 +82,16 @@ These commands are the intended workflow; a successful build and database run ha
 
 The current source uses a local SQL Server instance, the `GestaoViaturasAtual` database and Windows integrated authentication. Its `TrustServerCertificate=True` setting should be reviewed for any environment beyond local development.
 
+## Database model
+
+The original schema diagram shows the relationships between vehicles, military personnel, units, operations, requisitions, maintenance and service orders.
+
+[Open the full-size diagram](docs/database-schema.png)
+
+![Military fleet database schema and table relationships](docs/database-schema.png)
+
+The image preserves the academic model's original labels and type notation. Use [sql/AAD.sql](sql/AAD.sql) as the reference for the SQL Server implementation, including exact data types and constraints.
+
 ## Database setup
 
 Use SQL Server Management Studio with an account allowed to create databases and objects. Run the scripts in this order:
