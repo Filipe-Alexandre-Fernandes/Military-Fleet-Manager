@@ -82,6 +82,16 @@ Estes comandos descrevem o processo previsto; a compilação e a execução com 
 
 O código atual utiliza uma instância local de SQL Server, a base de dados `GestaoViaturasAtual` e autenticação integrada do Windows. A opção `TrustServerCertificate=True` deve ser revista para ambientes além do desenvolvimento local.
 
+## Modelo de dados
+
+O diagrama original apresenta as relações entre viaturas, militares, unidades, operações, requisições, manutenção e ordens de serviço.
+
+[Abrir o diagrama em tamanho completo](docs/database-schema.png)
+
+![Esquema da base de dados de gestão de viaturas militares e relações entre tabelas](docs/database-schema.png)
+
+A imagem mantém as designações e a notação de tipos do modelo académico. Consultar [sql/AAD.sql](sql/AAD.sql) como referência da implementação em SQL Server, incluindo os tipos de dados e as restrições exatos.
+
 ## Preparar a base de dados
 
 Utilizar o SQL Server Management Studio com uma conta que possa criar bases de dados e objetos. Executar pela seguinte ordem:
